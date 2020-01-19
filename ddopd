@@ -1,0 +1,66 @@
+#!/usr/bin/perl
+
+use Net::MQTT::Simple;
+use Getopt::Long;
+
+usage(), exit if not GetOptions(
+  's|server:s' => \$server,   # MQTT mosquitto server/broker
+  'h|host:s'   => \$host,     # Hostname tag to use for this client
+);
+
+if(defined($server)) { $mqtt=Net::MQTT::Simple->new("$server"); }
+ else { &syntax("Please provide the MQTT broker to talk to."); }
+if(defined($host)) { $mqtt->publish("ddop/to" => "$host:starting"); }
+ else { &syntax("Please provide a hostname tag for logging."); }
+
+$mqtt->run(
+    "firewall/+/new" => sub {
+        my ($topic, $message) = @_;
+        die "DOIT1 Stopping" if $message eq "STOP";
+    },
+    "ddop/to" => sub {
+        my ($topic, $message) = @_;
+        print "[$topic] $message\n";
+
+        if($message=~/NEW RULE:/)
+        {
+         ($dummy,$hostTag,$actionType,$ipString)=split(/:/,$message);
+         print "CONSOLE: New rule detected from $hostTag\n";
+         &takeAction($hostTag,$actionType,$ipString);
+        }
+    },
+    "#" => sub {
+        my ($topic, $message) = @_;
+        print "[$topic] $message\n";
+    },
+);
+
+sub syntax
+{
+ my @errorString=@_;
+
+ print "@errorString\n\n";
+
+ print "SYNTAX: $0 -s|--server <server> -h|--host <host_tag>\n";
+ print "Where,\n";
+ print "  server = MQTT Mosquitto server or broker to communicate with\n";
+ print "    host = A host tag to discern this client in logs\n";
+
+ exit(1);
+}
+
+sub takeAction
+{
+ my ($hostTag,$actionType,$ipString)=@_;
+
+ print "CONSOLE: host=$hostTag, action=$actionType, ip=$ipString\n";
+
+ if($actionType=~/insert/i) { $actionStr='I' }
+  else { if($actionType=~/delete/i) { $actionStr='D' }
+    else { if($actionType=~/append/i) { $actionStr='A' }
+      else { die "ERROR: Unknown action type supplied\n"; }
+         }
+       }
+
+ system("/usr/local/bin/ddop_fwscript",$actionStr,$ipString,$hostTag);
+}

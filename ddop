@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+
+use Net::MQTT::Simple;
+use Getopt::Long;
+ 
+usage(), exit if not GetOptions(
+  's|server:s' => \$server,   # MQTT mosquitto server/broker
+  'h|host:s'   => \$host,     # Hostname tag to use for this client
+  't|type:s'   => \$type,     # Type of rule message (e.g., append, insert, delete)
+  'i|ip:s'     => \$ip        # IP string to apply rule to (e.g., 123.123.123.0/24)
+);
+
+if(defined($server)) { $mqtt=Net::MQTT::Simple->new("$server"); }
+ else { &syntax("Please provide the MQTT broker to talk to."); }
+if(defined($host)) { } #$mqtt->publish("ddop/to" => "$host:incoming message"); }
+ else { &syntax("Please provide a hostname tag for logging."); }
+if(not defined($type)) { &syntax("Please provide a rule message type.");  }
+if(not defined($ip)) { &syntax("Please provide an IP string to apply rule to.");  }
+
+$mqtt->publish("ddop/to" => "NEW RULE:$host:$type:$ip");
+
+exit(0);
+
+sub syntax 
+{
+ my @errorString=@_;
+
+ print "@errorString\n\n";
+
+ print "SYNTAX: $0 -s|--server <server> -h|--host <host_tag> -t|--type <rule_type> -i|--ip <ip_string>\n";
+ print "Where,\n";
+ print "  server = MQTT Mosquitto server or broker to communicate with\n";
+ print "    host = A host tag to discern this client in logs\n";
+ print "    type = A rule message type (e.g., append, insert, delete)\n";
+ print "      ip = The IP address string to take action on (e.g., 123.123.123.0/24)\n";
+
+ exit(1);
+}

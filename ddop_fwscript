@@ -1,0 +1,19 @@
+#!/bin/sh
+
+EXISTS=`/sbin/iptables-save | grep -- "-A INPUT -s $2 -j REJECT --reject-with icmp-port-unreachable"`
+
+if [ -z "$EXISTS" ]
+then
+  /sbin/iptables -$1 INPUT -s $2 -j REJECT --reject-with icmp-port-unreachable
+  /bin/logger -t DDoP "Firewall change accepted from $3: $1 on $2"
+else
+  if [ "${1}" != "D" ]
+  then 
+    /bin/logger -t DDoP "Firewall change already exists from $3: $1 on $2"
+  else
+    /sbin/iptables -$1 INPUT -s $2 -j REJECT --reject-with icmp-port-unreachable
+    /bin/logger -t DDoP "Firewall change accepted from $3: $1 on $2"
+  fi
+fi
+
+exit 0;
