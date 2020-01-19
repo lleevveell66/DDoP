@@ -1,8 +1,8 @@
-<<<<<<< HEAD
 DDoP (Distributed Denial of Packets) v.0.0.1
 by level6 of LiE
 ---------------------------------------------
 
+<pre>
 This is a work in progress...  sorry.  
 
 To Do:
@@ -55,7 +55,5 @@ iptables -L -n | grep 123
 iptables -L -n | grep 123
 
 # Check syslog for the activity.
-=======
-# DDoP
-DDoP (Distributed Denial of Packets)
->>>>>>> 142624e2287941bd37764f48e74d184278420d86
+
+</pre>
