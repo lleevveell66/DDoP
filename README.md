@@ -8,6 +8,8 @@ This is a work in progress...  sorry.
 To Do:
 ------
 - Add ddop_fwscript script for firewalld
+- Add ddop_fwscript script for ufw
+- Implement comments in rules with datestamps (not easy to delete... maybe explore using a separate chain)
 - Daemonize ddopd and built init scripts for sysv
 - Implement SSL for MQTT
 
@@ -29,12 +31,15 @@ Requirements:
 -------------
 - Perl
 - Net::MQTT::Simple
-- MMQT Mosquito broker running on some reachable server
+- MMQT Mosquito broker running on some reachable server (apt-get install mosquitto)
 - Customization of ddop_fwscript for your chains, tables, software, etc.
 
 Installation:
 -------------
 
+cd /usr/local/src/
+git clone https://github.com/lleevveell66/DDoP.git
+cd DDoP
 chmod 755 ddop*
 cp ddop* /usr/local/bin
 

@@ -2,6 +2,9 @@
 
 EXISTS=`/sbin/iptables-save | grep -- "-A INPUT -s $2 -j REJECT --reject-with icmp-port-unreachable"`
 
+DATETIME=`/bin/date --rfc-3339=seconds`
+
+
 if [ -z "$EXISTS" ]
 then
   /sbin/iptables -$1 INPUT -s $2 -j REJECT --reject-with icmp-port-unreachable
