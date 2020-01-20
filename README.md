@@ -30,7 +30,7 @@ Better description to come later...
 Requirements:
 -------------
 - Perl
-- Net::MQTT::Simple
+- Net::MQTT::Simple (cpan Test::More;cpan Net::MQTT::Simple)
 - MMQT Mosquito broker running on some reachable server (apt-get install mosquitto)
 - Customization of ddop_fwscript for your chains, tables, software, etc.
 
@@ -41,7 +41,14 @@ cd /usr/local/src/
 git clone https://github.com/lleevveell66/DDoP.git
 cd DDoP
 chmod 755 ddop*
-cp ddop* /usr/local/bin
+cp ddopd /usr/local/bin
+cp ddop /usr/local/bin
+
+# For iptables:
+cp ddop_fwscript.iptables /usr/local/bin/ddop_fwscript
+
+# For firewalld:
+cp ddop_fwscript.firewalld /usr/local/bin/ddop_fwscript
 
 # In one terminal (this will be daemonized, later):
 /usr/local/bin/ddopd -s your_mqtt_broker_ip -h this_host_tag

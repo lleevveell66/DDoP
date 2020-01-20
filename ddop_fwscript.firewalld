@@ -1,0 +1,45 @@
+#!/bin/sh
+
+EXISTS=`/usr/bin/firewall-cmd --list-all|grep rule\ family\=\"ipv4\"\ source\ address\=\"${2}\"\ reject`
+
+DATETIME=`/bin/date --rfc-3339=seconds`
+
+if [ -z "$EXISTS" ]
+then
+  if [ "${1}" == "I" ]
+  then
+    /usr/bin/firewall-cmd --permanent --add-rich-rule="rule family='ipv4' source address='$2' reject"
+    /usr/bin/firewall-cmd --reload
+    /bin/logger -t DDoP "Firewall change accepted from $3: $1 on $2"
+  fi
+  if [ "${1}" == "A" ]
+  then
+    /usr/bin/firewall-cmd --permanent --add-rich-rule="rule family='ipv4' source address='$2' reject"
+    /usr/bin/firewall-cmd --reload
+    /bin/logger -t DDoP "Firewall change accepted from $3: $1 on $2"
+  fi
+  if [ "${1}" == "D" ]
+  then
+    /usr/bin/firewall-cmd --permanent --remove-rich-rule="rule family='ipv4' source address='$2' reject"
+    /usr/bin/firewall-cmd --reload
+    /bin/logger -t DDoP "Firewall change accepted from $3: $1 on $2"
+  fi
+else
+  if [ "${1}" == "I" ]
+  then
+    /bin/logger -t DDoP "Firewall change already exists from $3: $1 on $2"
+  fi
+  if [ "${1}" == "A" ]
+  then
+    /bin/logger -t DDoP "Firewall change already exists from $3: $1 on $2"
+  fi
+  if [ "${1}" == "D" ]
+  then
+    /usr/bin/firewall-cmd --permanent --remove-rich-rule="rule family='ipv4' source address='$2' reject"
+    /usr/bin/firewall-cmd --reload
+    /bin/logger -t DDoP "Firewall change accepted from $3: $1 on $2"
+  fi
+fi
+
+exit 0;
+
